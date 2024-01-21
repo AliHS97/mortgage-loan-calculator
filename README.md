@@ -65,3 +65,11 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 "# mortgage-loan-calculator" 
+
+## database
+
+CREATE DATABASE mortgage_loan_calculator_data;
+
+CREATE USER 'mortgage_loan_calculator_root'@'localhost' IDENTIFIED BY 'password';
+
+GRANT ALL PRIVILEGES ON mortgage_loan_calculator_data.* TO 'mortgage_loan_calculator_root'@'localhost' WITH GRANT OPTION;
