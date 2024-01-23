@@ -20,4 +20,9 @@ class Loan extends Model
         'loan_term',
         'monthly_fixed_extra_payment',
     ];
+
+    public function loanAmortizationSchedule()
+    {
+        return $this->hasMany(LoanAmortizationSchedule::class);
+    }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 
@@ -28,5 +27,13 @@ class LoanController extends Controller
     {
         Loan::create($loanCreateRequest->validated());
         return Redirect::route('loans.index')->with('status', 'loan-created');
+    }
+
+    public function getFetchAmortizationSchedule(Loan $loan): View
+    {
+        return view('loans.amortization', [
+            'loan' => $loan,
+            'schedule' => $loan->loanAmortizationSchedule
+        ]);
     }
 }
