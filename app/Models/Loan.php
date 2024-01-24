@@ -25,4 +25,14 @@ class Loan extends Model
     {
         return $this->hasMany(LoanAmortizationSchedule::class);
     }
+
+    public function extraRepaymentSchedule()
+    {
+        return $this->hasMany(ExtraRepaymentSchedule::class);
+    }
+
+    public function getLatestSchedule()
+    {
+        return $this->extraRepaymentSchedule->count() ? $this->extraRepaymentSchedule()->orderBy('id', 'ASC')->take($this->loan_term * 12)->get() : $this->loanAmortizationSchedule;
+    }
 }

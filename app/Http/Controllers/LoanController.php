@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Redirect;
 use App\Models\Loan;
 use Illuminate\View\View;
 use App\Http\Requests\LoanCreateRequest;
+use App\Models\ExtraRepaymentSchedule;
+use App\Services\LoanService;
+use Illuminate\Http\Request;
 
 class LoanController extends Controller
 {
@@ -33,7 +36,14 @@ class LoanController extends Controller
     {
         return view('loans.amortization', [
             'loan' => $loan,
-            'schedule' => $loan->loanAmortizationSchedule
+            'schedule' => $loan->getLatestSchedule()
         ]);
+    }
+
+    public function postMakeExtraPayment(Request $request, Loan $loan)
+    {
+        $extraPaymentMonths = $request->extraPaymentMonths ?? [];
+        (new LoanService())->generateAmortizationSchedule($loan, $extraPaymentMonths);
+        return Redirect::route('loans.amortization.schedule', ['loan' => $loan]);
     }
 }

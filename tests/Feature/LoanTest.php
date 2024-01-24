@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Loan;
 use App\Models\User;
+use App\Services\LoanService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -65,5 +66,19 @@ class LoanTest extends TestCase
         ]);
 
         $this->assertGreaterThanOrEqual(1, $loan->loanAmortizationSchedule->count());
+    }
+
+    public function test_monthly_extra_repayment_can_be_made()
+    {
+        $loan = Loan::create([
+            'amount' => 10000,
+            'annual_interest_rate' => 2,
+            'loan_term' => 2,
+            'monthly_fixed_extra_payment' => 100
+        ]);
+
+        (new LoanService())->generateAmortizationSchedule($loan, [1, 2, 3]);
+
+        $this->assertGreaterThanOrEqual(1, $loan->extraRepaymentSchedule->count());
     }
 }

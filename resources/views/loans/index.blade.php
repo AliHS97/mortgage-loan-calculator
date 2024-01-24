@@ -32,10 +32,10 @@
                                   @foreach($loans as $loan)
                                       <tr>
                                           <th scope="row">#</th>
-                                          <td>{{$loan->amount}}</td>
-                                          <td>{{$loan->annual_interest_rate}}</td>
-                                          <td>{{$loan->loan_term}}</td>
-                                          <td>{{$loan->monthly_fixed_extra_payment}}</td>
+                                          <td>{{$loan->amount}}$</td>
+                                          <td>{{$loan->annual_interest_rate}}%</td>
+                                          <td>{{$loan->loan_term}} years</td>
+                                          <td>{{$loan->monthly_fixed_extra_payment}}$</td>
                                           <td>
                                             <x-nav-link :href="route('loans.amortization.schedule', ['loan' => $loan->id])">
                                                 {{ __('Amortization') }}
