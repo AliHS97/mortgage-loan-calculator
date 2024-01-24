@@ -42,21 +42,35 @@
                                       <th scope="col">Monthly Payment</th>
                                       <th scope="col">Principal Payment</th>
                                       <th scope="col">Interest Payment</th>
+                                      <th scope="col">Extra Payment Amount</th>
                                       <th scope="col">Ending Balance</th>
+                                      <th scope="col">Extra Payment</th>
                                   </tr>
                               </thead>
                               <tbody>
-                                  @foreach($schedule as $item)
-                                      <tr>
-                                          <th scope="row">#</th>
-                                          <td>{{$item->month}}</td>
-                                          <td>{{$item->starting_balance}}</td>
-                                          <td>{{$item->monthly_payment}}</td>
-                                          <td>{{$item->principal_payment}}</td>
-                                          <td>{{$item->interest_payment}}</td>
-                                          <td>{{$item->ending_balance}}</td>
-                                      </tr>
-                                  @endforeach
+                                  <form method="post" action="{{ route('loans.extra.payment', ['loan' => $loan->id]) }}">
+                                      @csrf
+                                      @foreach($schedule as $item)
+                                          <div class="input-group">
+                                          <tr>
+                                              <th scope="row">{{$item->id}}</th>
+                                              <td>{{$item->month}}</td>
+                                              <td>{{$item->starting_balance}}$</td>
+                                              <td>{{$item->monthly_payment}}$</td>
+                                              <td>{{$item->principal_payment}}$</td>
+                                              <td>{{$item->interest_payment}}$</td>
+                                              <td>{{$item->extra_repayment ?? 0}}$</td>
+                                              <td>{{$item->ending_balance}}$</td>
+                                              <td style="text-align: center !important;">
+                                                  <input class="form-check-input" type="checkbox" name="extraPaymentMonths[]" value="{{$item->month}}" {{$item->extra_repayment ? "checked" : ""}}>
+                                              </td>
+                                          </tr>
+                                          </div>
+                                      @endforeach
+                                      <div class="input-group m-3">
+                                          <button type="submit" class="btn btn-light">Update</button>
+                                      </div>
+                                  </form>
                               </tbody>
                           </table>
                         @endif

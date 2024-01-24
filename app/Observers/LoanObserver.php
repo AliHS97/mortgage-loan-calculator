@@ -18,6 +18,6 @@ class LoanObserver
      */
     public function created(Loan $loan): void
     {
-        $this->loanService->generateAmortizationSchedule($loan);
+        $this->loanService->generateAmortizationSchedule($loan, []);
     }
 }

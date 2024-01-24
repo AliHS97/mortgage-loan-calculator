@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Loan;
+use App\Models\ExtraRepaymentSchedule;
 use App\Models\LoanAmortizationSchedule;
 
 class LoanService
@@ -18,7 +19,7 @@ class LoanService
      *
      * @return void
      */
-    public function generateAmortizationSchedule(Loan $loan): void
+    public function generateAmortizationSchedule(Loan $loan, array $extraPaymentMonths): void
     {
         $schedule = [];
 
@@ -37,11 +38,20 @@ class LoanService
             $interestPayment = $remainingLoanBalance * $monthlyInterestRate;
             $principalPayment = $monthlyPayment - $interestPayment;
 
+            // Check if the current month is in the array of extra payment months
+            $extraPayment = 0;
+            if (in_array($month, $extraPaymentMonths)) {
+                $extraPayment = min($loan->monthly_fixed_extra_payment, $remainingLoanBalance);
+                $principalPayment += $extraPayment;
+                $remainingLoanBalance -= $extraPayment;
+            }
+
             // Update the remaining loan balance after the principal payment
             $remainingLoanBalance -= $principalPayment;
-
-            // Add the current month's data to the schedule array
-            $schedule[] = [
+            $remainingLoanBalance = $remainingLoanBalance < 0 ? 0 : $remainingLoanBalance;
+            
+            // Build the current month's data
+            $scheduleEntry = [
                 'loan_id' => $loan->id,
                 'month' => $month,
                 'starting_balance' => round($remainingLoanBalance + $principalPayment, 2),
@@ -50,9 +60,26 @@ class LoanService
                 'interest_payment' => round($interestPayment, 2),
                 'ending_balance' => round($remainingLoanBalance, 2),
             ];
-        }
 
-        // Insert the generated schedule into the 'loan_amortization_schedules' table
-        LoanAmortizationSchedule::insert($schedule);
+            // if we have extra months array passed to the function then we're creating extra payments schedule
+            if (count($extraPaymentMonths)) {
+                $scheduleEntry['extra_repayment'] = $extraPayment;
+            }
+
+            // Add the current month's data to the schedule array
+            $schedule[] = $scheduleEntry;
+
+            // break the loop if the ending balance is 0
+            if ($remainingLoanBalance == 0) {
+                break;
+            }
+        }
+        // Insert the generated schedule into the 'loan_amortization_schedules' or 'extra_repayment_schedule' table
+        if ($extraPaymentMonths) {
+            $loan->extraRepaymentSchedule()->delete();
+            ExtraRepaymentSchedule::insert($schedule);
+        } else {
+            LoanAmortizationSchedule::insert($schedule);
+        }
     }
 }

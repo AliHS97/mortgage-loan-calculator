@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/loans/create', [LoanController::class, 'create'])->name('loans.create');
     Route::post('/loans', [LoanController::class, 'store'])->name('loans.store');
     Route::get('/loans/{loan}/amortization/schedule', [LoanController::class, 'getFetchAmortizationSchedule'])->name('loans.amortization.schedule');
+    Route::post('/loans/{loan}/extra/payment', [LoanController::class, 'postMakeExtraPayment'])->name('loans.extra.payment');
 });
 
 require __DIR__.'/auth.php';
